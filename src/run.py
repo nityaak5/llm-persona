@@ -11,6 +11,12 @@ Usage examples:
 import argparse
 import sys
 
+import os
+import sys
+
+# Allow running as: python src/run.py from the repo root
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+
 from src.config import DEFAULT_NUM_ROUNDS, DATA_DIR
 from src.conversation_generator import run_conversation
 from src.logger import save_conversation, list_conversations
