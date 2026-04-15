@@ -6,6 +6,7 @@ for a configurable number of rounds.
 """
 
 from openai import OpenAI
+from src.evaluation import evaluate_response
 from src.config import (
     OPENAI_API_KEY,
     SYNTHETIC_USER_MODEL,
@@ -123,7 +124,12 @@ def run_conversation(num_rounds: int = 25, verbose: bool = True) -> dict:
         # --- Synthetic user turn ---
         user_message = get_synthetic_user_message(openai_history)
         openai_history.append({"role": "user", "content": user_message})
-        turns.append({"round": round_num, "speaker": "synthetic_user", "content": user_message})
+        turns.append({
+            "round": round_num,
+            "speaker": "synthetic_user",
+            "content": user_message,
+            "metrics": evaluate_response(user_message, "synthetic_user"),
+        })
 
         if verbose:
             print(f"  Synthetic user: {user_message}")
@@ -131,7 +137,12 @@ def run_conversation(num_rounds: int = 25, verbose: bool = True) -> dict:
         # --- Chat model turn ---
         model_response = get_chat_model_response(openai_history)
         openai_history.append({"role": "assistant", "content": model_response})
-        turns.append({"round": round_num, "speaker": "chat_model", "content": model_response})
+        turns.append({
+            "round": round_num,
+            "speaker": "chat_model",
+            "content": model_response,
+            "metrics": evaluate_response(model_response, "chat_model"),
+        })
 
         if verbose:
             print(f"  Chat model:     {model_response}")
